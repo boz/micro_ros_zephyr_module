@@ -1,7 +1,7 @@
 #include <version.h>
 
 #if ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(3,1,0)
-#include <zephyr/zephyr.h>
+#include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/gpio.h>
@@ -39,7 +39,7 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 	}
 }
 
-void main(void)
+int main(void)
 {
 	rmw_uros_set_custom_transport(
 		MICRO_ROS_FRAMING_REQUIRED,
@@ -70,11 +70,12 @@ void main(void)
 	// create timer,
 	rcl_timer_t timer;
 	const unsigned int timer_timeout = 1000;
-	RCCHECK(rclc_timer_init_default(
+	RCCHECK(rclc_timer_init_default2(
 		&timer,
 		&support,
 		RCL_MS_TO_NS(timer_timeout),
-		timer_callback));
+		timer_callback,
+    true));
 
 	// create executor
 	rclc_executor_t executor;
