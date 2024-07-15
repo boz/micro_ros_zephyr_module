@@ -10,7 +10,7 @@ This module has been tested in Zephyr RTOS v2.7.0 (SDK 0.14.2) and v3.1.0 (SDK 0
 This component needs `colcon` and other Python 3 packages in order to build micro-ROS packages:
 
 ```bash
-pip3 install catkin_pkg lark-parser empy colcon-common-extensions
+pip3 install -r requirements.txt
 ```
 
 ## Usage
