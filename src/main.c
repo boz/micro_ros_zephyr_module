@@ -17,6 +17,7 @@
 #include <rcl/rcl.h>
 #include <rcl/error_handling.h>
 #include <std_msgs/msg/int32.h>
+#include <scarecrow_interfaces/msg/target.h>
 
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
