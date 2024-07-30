@@ -20,6 +20,8 @@
 
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
+#include <rclc/subscription.h>
+#include <rclc/timer.h>
 
 #include <rmw_microros/rmw_microros.h>
 #include <microros_transports.h>
@@ -37,6 +39,13 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 		RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
 		msg.data++;
 	}
+}
+
+rcl_subscription_t subscription;
+std_msgs__msg__Int32 sub_msg;
+
+void sub_callback(const void *msgin) {
+  const std_msgs__msg__Int32 * msg = msgin;
 }
 
 int main(void)
@@ -67,6 +76,13 @@ int main(void)
 		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
 		"zephyr_int32_publisher"));
 
+  // create subscription
+  RCCHECK(rclc_subscription_init_default(
+    &subscription,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+    "zephyr_int32_subscription"));
+
 	// create timer,
 	rcl_timer_t timer;
 	const unsigned int timer_timeout = 1000;
@@ -81,6 +97,14 @@ int main(void)
 	rclc_executor_t executor;
 	RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
 	RCCHECK(rclc_executor_add_timer(&executor, &timer));
+
+  /* XXX: this makes it blow up */
+  RCCHECK(rclc_executor_add_subscription(
+    &executor,
+    &subscription,
+    &sub_msg,
+    sub_callback,
+    ON_NEW_DATA));
 
 	msg.data = 0;
 
